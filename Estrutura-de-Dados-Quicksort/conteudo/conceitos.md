@@ -1,49 +1,35 @@
-# Estrutura de Dados — Quicksort e Particionamento
+# Quicksort e particionamento
 
-## 1. Conceito
+## 1. Ideia
 
-Quicksort é um algoritmo de ordenação baseado na estratégia de **divisão e conquista**: o array é particionado em torno de um elemento de referência (**pivô**), de modo que todos os menores fiquem à esquerda e todos os maiores à direita. O processo é então repetido recursivamente para as duas partições.
+Quicksort ordena por **divisão e conquista**. Escolhe um pivô, particiona o vetor ao redor dele e ordena recursivamente as regiões resultantes. As partições não precisam ter o mesmo tamanho.
 
-## 2. Divisão e conquista
+Na implementação deste projeto, o particionamento de Lomuto coloca à esquerda os valores menores que o pivô e, à direita, os valores maiores ou iguais a ele. O próprio pivô termina na posição que ocupará no vetor ordenado.
 
-1. **Dividir**: escolher um pivô e particionar o array em duas metades.
-2. **Conquistar**: ordenar recursivamente cada metade.
-3. **Combinar**: não é necessário — ao final da recursão, o array já está ordenado in-place.
+## 2. Particionamento de Lomuto
 
-## 3. Escolha do pivô
+1. Escolher o último valor do intervalo como pivô.
+2. Percorrer os demais valores e mover cada valor menor que o pivô para a região da esquerda.
+3. Trocar o pivô com o primeiro valor da região da direita.
 
-Estratégias comuns:
-- Primeiro elemento;
-- Último elemento (usado no esquema de Lomuto);
-- Elemento do meio;
-- Elemento aleatório (reduz a chance do pior caso em entradas já ordenadas).
+Como a comparação é estrita (`valor < pivô`), valores iguais ao pivô ficam do lado direito. Esse particionamento não é estável: elementos de mesma chave podem mudar sua ordem relativa.
 
-## 4. Particionamento (esquema de Lomuto)
+## 3. Recursão e pivô
 
-1. Escolhe-se o último elemento como pivô.
-2. Um índice `i` marca o limite da região "menor que o pivô".
-3. Percorre-se o array com `j`; sempre que `array[j] < pivô`, o elemento é trocado para dentro da região dos menores.
-4. Ao final, o pivô é trocado para sua posição correta (entre as duas regiões).
+Depois de particionar, ordenar recursivamente os intervalos à esquerda e à direita do pivô. A recursão termina quando o intervalo tem zero ou um elemento.
 
-O pivô termina exatamente na posição em que ficaria se o array estivesse ordenado.
+O projeto escolhe sempre o último elemento como pivô. A escolha do primeiro ou do último pode produzir partições muito desequilibradas em entradas ordenadas; pivôs aleatórios ou medianas podem reduzir esse risco, mas não eliminam o pior caso teórico.
 
-## 5. Chamadas recursivas
+## 4. Complexidade
 
-Após o particionamento, o Quicksort é chamado recursivamente para:
-- o subarray à esquerda do pivô;
-- o subarray à direita do pivô.
-
-A recursão termina quando o subarray tem 0 ou 1 elemento.
-
-## 6. Complexidade
-
-| Caso | Complexidade | Situação |
+| Caso | Tempo | Comportamento |
 |---|---|---|
-| Melhor caso | O(n log n) | Pivô sempre divide o array ao meio |
-| Caso médio | O(n log n) | Divisões razoavelmente equilibradas |
-| Pior caso | O(n²) | Pivô sempre é o menor ou maior elemento (ex.: array já ordenado com pivô fixo) |
+| Melhor | $O(n \log n)$ | Partições equilibradas |
+| Médio | $O(n \log n)$ | Entrada aleatória ou sem padrão que force partições ruins |
+| Pior | $O(n^2)$ | Partições de tamanhos 0 e $n - 1$ repetidamente |
 
-**Espaço:** O(log n) no caso médio, devido à pilha de recursão (ordenação in-place).
+**Pilha de recursão:** $O(\log n)$ em média e $O(n)$ no pior caso. A ordenação é in-place quanto ao vetor, mas a pilha recursiva ocupa espaço auxiliar.
 
 ## Referências
-Ver [bibliografia completa](../referencias/bibliografia.md#estrutura-de-dados).
+
+Consulte a [bibliografia complementar](../referencias/bibliografia.md#bibliografia-complementar).

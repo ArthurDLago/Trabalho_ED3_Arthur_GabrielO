@@ -1,365 +1,75 @@
-# Questões oficiais — QuickSort
+# Questões oficiais — Quicksort
+
+Os enunciados abaixo são paráfrases dos itens oficiais, acompanhadas de resolução detalhada. As provas e os gabaritos oficiais estão na [bibliografia](../referencias/bibliografia.md#fontes-das-questões).
 
 ---
 
-//DEIXEI AS QUESTÕES DE SO PARA SEGUIR DE EXEMPLO
-# 1. ENADE 2017 — Criação, execução e sincronização de duas threads
+## 1. ENADE 2005 — Questão 13: ordenação
 
-**Tema:** Threads, memória compartilhada, concorrência e `pthread_join`.
+**Perfil:** Bacharelado em Sistemas de Informação. O item avalia ordenação em geral; apenas uma das afirmações trata diretamente de Quicksort.
 
-**Fonte:** Indagação — questão do ENADE 2017.
+### Enunciado
 
-[Questão original no Indagação](https://www.indagacao.com.br/2023/06/enade-2017-considere-o-programa-seguir-que-ilustra-a-criacao-execucao-e-sincronizacao-de-duas-threads.html)
+A questão pede que se julguem quatro afirmações sobre algoritmos de ordenação:
 
-## Contexto da questão
+I. O Insertion Sort teria complexidade $O(n \log n)$.
 
-O programa em C utiliza POSIX Threads (`pthread`). Ele possui duas variáveis globais compartilhadas, `x` e `y`, cria duas threads por meio de `pthread_create()` e, ao final, a função principal utiliza `pthread_join()` para aguardar as duas threads.
+II. Um algoritmo seria estável quando preserva a ordem relativa dos elementos com valores iguais.
 
-A questão pergunta quais valores podem ser impressos ao final da execução.
+III. A escolha do pivô no Quicksort influenciaria seu desempenho.
 
-O código utiliza, de forma simplificada:
+IV. Bubble Sort e Insertion Sort fariam, em média, o mesmo número de comparações.
 
-```c
-int x = 0, y = 0;
+As alternativas combinam os itens considerados corretos:
 
-void funcao1(...) {
-    x = 1;
-    ...
-    if (y == 0)
-        printf("1 ");
-}
+- A) I e II;
+- B) I e III;
+- C) II e IV;
+- D) I, III e IV;
+- E) II, III e IV.
 
-void funcao2(...) {
-    y = 1;
-    ...
-    if (x == 0)
-        printf("2 ");
-}
-```
+### Resolução comentada
 
-A questão explora principalmente o fato de que as duas threads executam concorrentemente e que a ordem relativa entre suas instruções não é determinada pelo código.
+**I. Falsa.** No Insertion Sort, o pior caso e o caso médio são $O(n^2)$; no melhor caso, com a entrada já ordenada, é $O(n)$. Não é um algoritmo de $O(n \log n)$.
 
-### Alternativas
+**II. Verdadeira.** Estabilidade significa que dois elementos com a mesma chave mantêm entre si a ordem que tinham na entrada.
 
-A) ambos os valores “1” e “2”.  
-B) o valor “1”, necessariamente.  
-C) o valor “2”, necessariamente.  
-D) o valor “1”, ou o valor “2”, mas nunca ambos.  
-E) o valor “1”, ou o valor “2”, ou nenhum valor, mas nunca ambos.
+**III. Verdadeira.** O pivô determina os tamanhos das partições. Partições equilibradas levam a tempo médio $O(n \log n)$; partições repetidamente com tamanhos 0 e $n - 1$ levam ao pior caso $O(n^2)$.
 
-### Gabarito oficial indicado na fonte
+**IV. Considerada verdadeira pelo gabarito oficial.** A afirmação deve ser lida em termos da ordem assintótica: as duas ordenações fazem $\Theta(n^2)$ comparações em média. Isso não significa que toda implementação execute exatamente a mesma quantidade; a contagem precisa depende das variantes e dos dados de entrada, que a questão não especifica.
 
-**E**
-
-## Resolução comentada
-
-O ponto central é analisar as possíveis intercalações das instruções das duas threads.
-
-As variáveis `x` e `y` pertencem ao espaço de memória compartilhado pelo processo. Portanto, ambas as threads podem ler e modificar essas variáveis.
-
-As duas threads executam aproximadamente:
-
-```text
-Thread 1                    Thread 2
----------                    ---------
-x = 1                        y = 1
-verifica y                   verifica x
-```
-
-Como o escalonador pode intercalar a execução, diferentes situações podem ocorrer.
-
-### Caso 1 — Thread 1 verifica `y` antes de Thread 2 executar `y = 1`
-
-Nesse caso, `y` ainda pode ser `0` e a Thread 1 pode imprimir:
-
-```text
-1
-```
-
-Depois disso, a Thread 2 poderá executar e verificar `x`.
-
-### Caso 2 — Thread 2 verifica `x` antes de Thread 1 executar `x = 1`
-
-Nesse caso, `x` ainda pode ser `0` e a Thread 2 pode imprimir:
-
-```text
-2
-```
-
-### Caso 3 — As atribuições ocorrem antes das verificações
-
-Se:
-
-```text
-x = 1
-y = 1
-```
-
-forem executadas antes das respectivas verificações, nenhuma das condições poderá ser satisfeita e nenhum valor será impresso.
-
-### Conclusão
-
-A sincronização feita por:
-
-```c
-pthread_join(t1, NULL);
-pthread_join(t2, NULL);
-```
-
-garante que a função principal aguarde o término das threads, mas **não determina a ordem interna das instruções entre elas**.
-
-Portanto, a alternativa **E** é a indicada pela fonte: pode aparecer `1`, `2` ou nenhum dos dois, mas não ambos.
-
-### Conceitos que a questão cobra
-
-- concorrência;
-- escalonamento;
-- memória compartilhada;
-- `pthread_create`;
-- `pthread_join`;
-- interleaving de instruções;
-- sincronização de término.
+**Gabarito oficial: E — II, III e IV.** A prova e a chave oficial do INEP estão ligadas na bibliografia.
 
 ---
 
-# 2. ENADE 2017 — Sistema multithread e deadlock
+## 2. ENADE 2021 — Questão 32: partição do Quicksort
 
-**Tema:** Deadlock, semáforos e ordem de aquisição de recursos.
+### Enunciado
 
-**Fonte:** Indagação — questão do ENADE 2017.
+A questão fornece um algoritmo recursivo de ordenação e uma rotina de partição. Em cada chamada, a ordenação particiona o intervalo `lo..hi` e depois ordena recursivamente as partes antes e depois da posição devolvida.
 
-[Questão original no Indagação](https://www.indagacao.com.br/2023/06/enade-2017-um-programador-inexperiente-esta-desenvolvendo-um-sistema-multithread-que-possui-duas-estruturas-de-dados-diferentes-el-e-e2.html)
+Na partição, o último elemento do intervalo (`A[hi]`) é o pivô. Um índice `i` começa em `lo`; o índice `j` percorre o intervalo de `lo` até `hi`. Quando `A[j]` é menor que o pivô, `A[i]` e `A[j]` são trocados e `i` avança. Ao final, `A[i]` é trocado com o pivô, e `i` é devolvido.
 
-## Contexto da questão
+Com base nessa implementação, a prova avalia:
 
-O problema apresenta duas estruturas de dados compartilhadas, `E1` e `E2`, protegidas por mecanismos de sincronização, e duas threads que podem solicitar os recursos em ordens diferentes.
+I. se a pilha de recursão pode exigir espaço adicional $O(n)$;
 
-A situação relevante é:
+II. se o algoritmo é recursivo e estável;
 
-```text
-Thread A: M1 → M2
+III. se o número médio de comparações é $O(n \log n)$;
 
-Thread B: M2 → M1
-```
+IV. se escolher o primeiro elemento como pivô é sempre mais eficiente que escolher o último.
 
-A questão pergunta qual situação pode ocorrer e como ela pode ser evitada.
+As alternativas são: A) I e III; B) II e IV; C) III e IV; D) I, II e III; E) I, II e IV.
 
-### Alternativas
+### Resolução comentada
 
-A) Não ocorre deadlock porque a sequência de alocação impede naturalmente o problema.
+**I. Verdadeira no pior caso.** Considere uma entrada crescente `[1, 2, 3, 4]`. Como o último elemento é sempre o maior, a partição o deixa no final e produz subproblemas de tamanhos 3 e 0, depois 2 e 0, depois 1 e 0. A profundidade chega a $n$, portanto a pilha pode ocupar $O(n)$. Em partições equilibradas, a profundidade é $O(\log n)$; isso descreve o caso médio, não elimina o pior caso.
 
-B) Pode ocorrer deadlock, mas ele pode ser evitado simplesmente eliminando cálculos entre os pedidos de alocação.
+**II. Falsa.** As trocas do particionamento podem inverter elementos iguais. Por exemplo, considere quatro registros de mesma chave, inicialmente na ordem `a, b, c, d`. Como nenhum é menor que o pivô, a primeira partição troca o primeiro e o último. As chamadas recursivas deixam os registros na ordem `d, a, b, c`, diferente da entrada. O algoritmo é recursivo, mas não é estável.
 
-C) Pode ocorrer deadlock, mas sua baixa probabilidade e consequência inócua não comprometem o programa.
+**III. Verdadeira.** Para entradas sem padrão adverso, o custo médio das partições soma $O(n \log n)$. Isso é uma média: para entradas que geram partições desequilibradas, o número de comparações pode chegar a $O(n^2)$.
 
-D) Não ocorre deadlock porque o uso de semáforos é suficiente para impedir o problema.
+**IV. Falsa.** Nenhuma das duas posições é sempre superior. Com uma partição equivalente, usar o primeiro elemento como pivô também pode gerar partições extremas em dados ordenados; o resultado depende da entrada e da estratégia de escolha do pivô.
 
-E) Pode ocorrer deadlock e ele pode ser evitado solicitando os recursos na mesma ordem nas duas threads.
-
-### Gabarito
-
-**E**
-
-## Resolução comentada
-
-O problema é causado pela aquisição dos recursos em ordens diferentes.
-
-Considere a seguinte situação:
-
-```text
-Thread A
-   ↓
-obtém M1
-   ↓
-tenta obter M2
-```
-
-Enquanto isso:
-
-```text
-Thread B
-   ↓
-obtém M2
-   ↓
-tenta obter M1
-```
-
-Agora temos:
-
-```text
-A possui M1 e espera M2
-B possui M2 e espera M1
-```
-
-Nenhuma consegue prosseguir.
-
-Isso caracteriza um **deadlock**.
-
-## Como evitar?
-
-Uma estratégia clássica é estabelecer uma ordem global de aquisição:
-
-```text
-Thread A: M1 → M2
-Thread B: M1 → M2
-```
-
-Assim, uma thread pode esperar pela outra, mas não se forma o ciclo de espera causado pela ordem inversa.
-
-### Importante
-
-O simples uso de mutexes ou semáforos **não elimina automaticamente deadlocks**.
-
-Esses mecanismos controlam acesso a recursos, mas a forma como os recursos são adquiridos e liberados também precisa ser analisada.
-
-### Conceitos que a questão cobra
-
-- deadlock;
-- exclusão mútua;
-- espera e retenção;
-- ordem de aquisição;
-- sincronização;
-- hierarquia de locks.
-
----
-
-# 3. POSCOMP 2022 — Questão 46 — `fork()` e variáveis após criação de processo
-
-**Tema:** Criação de processos, `fork()` e espaço de memória.
-
-**Fonte:** POSCOMP 2022.
-
-A questão 46 apresenta um programa em C executado em um sistema UNIX. O programa realiza um `fork()`, incrementa uma variável global em ambos os fluxos de execução e depois imprime o valor dessa variável.
-
-[Discussão/referência visual enviada para este trabalho no Reddit](https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2Ffundamentos-de-computa%C3%A7%C3%A3o-prova-poscomp-2022-se%C3%A7%C3%A3o-resolvida-v0-waih914ene3b1.png%3Fwidth%3D606%26format%3Dpng%26auto%3Dwebp%26s%3D18ba14b66565572c42391097429ef8c6ca4de3a7)
-
-[Discussão da seção resolvida do POSCOMP 2022 no Reddit](https://www.reddit.com/r/brdev/comments/13xh35q)
-
-[Prova POSCOMP 2022 — referência consultada](https://pt.scribd.com/document/704656748/Prova-2022)
-
-## Enunciado resumido
-
-Após o `fork()` bem-sucedido, existem dois processos: pai e filho.
-
-Cada processo possui sua própria cópia lógica da variável global `i`. O programa incrementa `i` uma vez em cada ramo e depois realiza outro incremento antes de imprimir.
-
-### Alternativas
-
-A) `1 1`  
-B) `2 2`  
-C) `3 3`  
-D) `4 4`  
-E) Indeterminado Indeterminado
-
-### Gabarito
-
-**B — `2 2`**
-
-O gabarito definitivo do POSCOMP 2022 registra a alternativa **B** para a questão 46, classificada em Sistemas Operacionais.
-
-## Resolução comentada
-
-Antes do `fork()`:
-
-```text
-i = 0
-```
-
-O `fork()` cria dois processos.
-
-Depois da criação:
-
-```text
-Processo pai  → i = 0
-Processo filho → i = 0
-```
-
-Cada processo trabalha sobre sua própria cópia do espaço de memória.
-
-O código executa um incremento em cada ramo:
-
-```text
-pai   → i = 1
-filho → i = 1
-```
-
-Depois do `if/else`, ambos executam mais um incremento:
-
-```text
-pai   → i = 2
-filho → i = 2
-```
-
-Portanto, cada processo imprime:
-
-```text
-2
-```
-
-O resultado observado é:
-
-```text
-2 2
-```
-
-A ordem entre as duas impressões pode variar, mas o valor produzido por cada processo é 2.
-
-## Ponto conceitual importante
-
-O `fork()` não transforma pai e filho em duas threads que compartilham a mesma variável global.
-
-Após a criação, cada processo possui seu próprio espaço de endereçamento lógico. Por isso, o incremento realizado pelo pai não altera diretamente a cópia da variável pertencente ao filho, e vice-versa.
-
-### Conceitos que a questão cobra
-
-- `fork()`;
-- processo pai;
-- processo filho;
-- espaço de endereçamento;
-- cópia do estado após `fork()`;
-- concorrência;
-- diferença entre processo e thread.
-
----
-
-# Quadro de revisão das três questões
-
-| Questão | Tema principal | Conceito-chave |
-|---|---|---|
-| ENADE 2017 — Threads | Concorrência | Ordem de execução não determinística |
-| ENADE 2017 — Deadlock | Sincronização | Ordem de aquisição dos recursos |
-| POSCOMP 2022 — `fork()` | Processos | Pai e filho possuem espaços de memória separados |
-
-## O que revisar depois de resolver
-
-### Threads
-
-Pergunte:
-
-> A criação de threads determina a ordem de execução?
-
-**Não.**
-
-### `join()`
-
-Pergunte:
-
-> `pthread_join()` controla a ordem das instruções entre as threads?
-
-**Não.** Ele faz a thread chamadora aguardar o término da thread especificada.
-
-### Deadlock
-
-Pergunte:
-
-> Usar mutex/semafóro automaticamente elimina deadlock?
-
-**Não.** A organização da aquisição dos recursos também importa.
-
-### `fork()`
-
-Pergunte:
-
-> Pai e filho compartilham automaticamente a mesma variável global?
-
-**Não.** Após o `fork()`, cada processo possui seu próprio espaço de endereçamento lógico.
+**Gabarito oficial: A — I e III.** O gabarito do INEP confirma a alternativa; a resolução acima explica por que a afirmação I é verdadeira como limite de pior caso, embora o consumo médio da pilha seja $O(\log n)$.

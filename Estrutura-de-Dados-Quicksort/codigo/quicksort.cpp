@@ -1,65 +1,98 @@
-// quicksort.cpp
-// Implementação do Quicksort com particionamento de Lomuto.
-//
-
-
+#include <cassert>
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
-// Troca o conteúdo de duas posições do vetor
+using namespace std;
+
 void trocar(int &a, int &b)
 {
-    int temp = a;
+    int temporario = a;
     a = b;
-    b = temp;
+    b = temporario;
 }
 
-// Particiona o vetor em torno do pivô (último elemento do intervalo).
-// Retorna a posição final do pivô, já ordenada.
-int particionar(vector<int> &v, int inicio, int fim)
+size_t particionar(vector<int> &valores,
+                   size_t inicio,
+                   size_t fim)
 {
-    int pivo = v[fim];   // escolha do pivô: último elemento
-    int i = inicio - 1;  // limite da região "menor que o pivô"
+    const int pivo = valores[fim];
+    size_t limiteMenores = inicio;
 
-    for (int j = inicio; j < fim; j++)
+    for (size_t atual = inicio; atual < fim; ++atual)
     {
-        if (v[j] < pivo)
+        if (valores[atual] < pivo)
         {
-            i++;
-            trocar(v[i], v[j]);
+            trocar(valores[limiteMenores], valores[atual]);
+            ++limiteMenores;
         }
     }
 
-    // Move o pivô para sua posição final (entre as duas regiões)
-    trocar(v[i + 1], v[fim]);
-    return i + 1;
+    trocar(valores[limiteMenores], valores[fim]);
+    return limiteMenores;
 }
 
-// Ordena recursivamente v[inicio..fim]
-void quicksort(vector<int> &v, int inicio, int fim)
+void quicksortIntervalo(vector<int> &valores,size_t inicio,size_t fim)
 {
-    if (inicio < fim)
+    if (inicio >= fim)
     {
-        int posPivo = particionar(v, inicio, fim);
-
-        quicksort(v, inicio, posPivo - 1); // ordena a partição da esquerda
-        quicksort(v, posPivo + 1, fim);    // ordena a partição da direita
+        return;
     }
+
+    const size_t posicaoPivo = particionar(valores, inicio, fim);
+
+    if (posicaoPivo > inicio)
+    {
+        quicksortIntervalo(valores, inicio, posicaoPivo - 1);
+    }
+    if (posicaoPivo < fim)
+    {
+        quicksortIntervalo(valores, posicaoPivo + 1, fim);
+    }
+}
+
+void quicksort(vector<int> &valores)
+{
+    if (valores.size() > 1)
+    {
+        quicksortIntervalo(valores, 0, valores.size() - 1);
+    }
+}
+
+void verificarCasosLimite()
+{
+    std::vector<int> vazio;
+    quicksort(vazio);
+    assert(vazio.empty());
+
+    vector<int> unitario = {7};
+    quicksort(unitario);
+    assert((unitario == vector<int>{7}));
+
+    vector<int> repetidos = {3, 1, 3, 2, 1};
+    quicksort(repetidos);
+    assert((repetidos == vector<int>{1, 1, 2, 3, 3}));
 }
 
 int main()
 {
+    verificarCasosLimite();
+
     vector<int> dados = {8, 3, 7, 4, 9, 1, 5, 2, 6};
 
     cout << "Antes: ";
-    for (int n : dados) cout << n << " ";
-    cout << "\n";
+    for (int valor : dados)
+    {
+        cout << valor << ' ';
+    }
+    cout << '\n';
 
-    quicksort(dados, 0, dados.size() - 1);
+    quicksort(dados);
 
     cout << "Depois: ";
-    for (int n : dados) cout << n << " ";
-    cout << "\n";
-
-    return 0;
+    for (int valor : dados)
+    {
+        cout << valor << ' ';
+    }
+    cout << '\n';
 }

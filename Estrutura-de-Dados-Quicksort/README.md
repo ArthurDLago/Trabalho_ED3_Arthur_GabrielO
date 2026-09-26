@@ -1,29 +1,22 @@
-# Estrutura de Dados — Quicksort
+# Resumo: Algoritmo Quicksort
 
-**Quicksort e particionamento do array**.
+Autores: Arthur Lago e Gabriel de Oliveira
 
-## Integrantes
+## 1. Apresentação
 
-- Gabriel de Oliveira
-- Arthur Lago
+Este repositório apresenta o Quicksort com conceitos essenciais, implementação em C++ e resoluções comentadas de questões do ENADE.
 
-## Disciplina
+## 2. Conteúdos abordados
 
-Estrutura de Dados
+- divisão e conquista e particionamento de Lomuto;
+- escolha do pivô, estabilidade e tratamento de valores repetidos;
+- análise de tempo e espaço nos casos melhor, médio e pior.
 
-## Tema
+O resumo dos conceitos está em [`conteudo/conceitos.md`](conteudo/conceitos.md).
 
-Tema 03 — Quicksort. Particionamento do array para o Quicksort.
+## 3. Organização do repositório
 
-## Objetivo
-
-Explicar de forma objetiva o algoritmo Quicksort e seu particionamento, demonstrando-os com código funcional em C++ e questões de POSCOMP, ENADE, entre outras, verificada contra o gabarito oficial.
-
-## Conteúdos
-
-- Divisão e conquista
-- Escolha do pivô e particionamento (esquema de Lomuto)
-- Chamadas recursivas
-- Complexidade: melhor caso, caso médio e pior caso
-
-Ver detalhamento completo em [`conteudo/conceitos.md`](conteudo/conceitos.md).
+- [`codigo/quicksort.cpp`](codigo/quicksort.cpp): implementação do algoritmo;
+- [`questoes/questoes_oficiais.md`](questoes/questoes_oficiais.md): questões ENADE e resoluções comentadas;
+- [`materiais/materiais_complementares.md`](materiais/materiais_complementares.md): seleção curta de leituras e videoaulas;
+- [`referencias/bibliografia.md`](referencias/bibliografia.md): bibliografia e fontes das questões.
