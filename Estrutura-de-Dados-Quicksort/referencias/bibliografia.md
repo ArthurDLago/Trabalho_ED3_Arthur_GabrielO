@@ -12,6 +12,7 @@ CORMEN, Thomas H.; RIVEST, Ronald L.; LEISERSON, Charles E.; STEIN, Clifford. *A
 
 ROCHA, Antônio Adrego da. *Estruturas de Dados e Algoritmos em C*. 3. ed. Edição Revista e Aumentada. São Paulo: FCA Editora, 2014.
 
-## Fonte da questão real
+## Fonte das questões 
 
+//ADICIONAR FONTE DAS QUESTÕES AQUI - PODE USAR ESSE COMO EXEMPLO E DEPOIS EXCLUIR 
 SOCIEDADE BRASILEIRA DE COMPUTAÇÃO (SBC). *Exame POSCOMP 2019* e *Gabarito 2019*. Disponível em: https://www.sbc.org.br
